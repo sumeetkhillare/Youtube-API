@@ -1,17 +1,36 @@
 # Code by Sumeet Khillare
-import requests
 
-API_KEY = 'YOUR API KEY'
-ChannelID = 'YOUR CHANNEL ID'
+import requests
+import argparse
+
+def get_arguments():
+    parser = argparse.ArgumentParser(description='YTAPI')
+    parser.add_argument("-a", "--apikey", dest="apikey", help="Api Key")
+    parser.add_argument("-c", "--channelid", dest="channelid", help="Channel Id")
+    args = parser.parse_args()
+    if not args.apikey:
+        parser.error("[-] Please specify Api Key")
+    elif not args.channelid:
+        parser.error("[-] Please specify Channel Id")
+    return args
+
+
+options=get_arguments()
+apikey=options.apikey
+channelid=options.channelid
+
+API_KEY = apikey
+ChannelID = channelid
 url = 'https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=' + ChannelID + '&maxResults=50&type=video&key=' + API_KEY
 response = requests.get(url)
 videos = response.json()
 videoMetadata = []
+
 for video in videos['items']:
     if video['id']['kind'] == 'youtube#video':
         videoMetadata.append(video['id']['videoId'])
 for metadata in videoMetadata:
-    print("https://www.youtube.com/watch?v=" + metadata)
+    print("Link: "+"https://www.youtube.com/watch?v=" + metadata)
     SpecificVideoID = metadata
     SpecificVideoUrl = 'https://www.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics&id=' + SpecificVideoID + '&key=' + API_KEY
     response = requests.get(SpecificVideoUrl)
